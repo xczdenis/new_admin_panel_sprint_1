@@ -3,8 +3,15 @@ repos:
     hooks:
       - id: flake8
         name: flake8
-        description: wemake-python-styleguide enforcement
+        description: flake8 enforcement
         entry: flake8
         args: ["--config=setup.cfg"]
         language: python
         types: [python]
+      - id: isort
+        name: isort
+        description: isort enforcement
+        entry: isort .
+        language: python
+        types: [python]
+
