@@ -14,4 +14,3 @@ repos:
         entry: isort .
         language: python
         types: [python]
-
