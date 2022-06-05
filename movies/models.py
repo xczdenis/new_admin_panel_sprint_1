@@ -10,7 +10,7 @@ class Genre(UUIDMixin, TimeStampedMixin):
     description = models.TextField(blank=True)
 
     class Meta:
-        db_table = 'content"{0}"genre'.format('.')
+        db_table = 'content"."genre'
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
 
@@ -22,7 +22,7 @@ class Person(UUIDMixin, TimeStampedMixin):
     full_name = models.CharField(max_length=255)
 
     class Meta:
-        db_table = 'content"{0}"person'.format('.')
+        db_table = 'content"."person'
         verbose_name = 'Персона'
         verbose_name_plural = 'Персоны'
 
@@ -40,14 +40,15 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     creation_date = models.DateTimeField(_('creation_date'), blank=True, null=True)
     rating = models.FloatField(_('rating'), default=0, blank=True, validators=[MinValueValidator(0),
                                                                                MaxValueValidator(100)])
-    type = models.CharField(_('type'), max_length=10, choices=FilworkTypes.choices, default=FilworkTypes.MOVIE)
+    type = models.CharField(_('type'), max_length=10, choices=FilworkTypes.choices,
+                            default=FilworkTypes.MOVIE)
     genres = models.ManyToManyField(Genre, through='GenreFilmwork')
     persons = models.ManyToManyField(Person, through='PersonFilmwork')
     certificate = models.CharField(_('certificate'), max_length=512, blank=True, null=True, default='')
     file_path = models.FileField(_('file_path'), blank=True, null=True, upload_to='movies/')
 
     class Meta:
-        db_table = 'content"{0}"film_work'.format('.')
+        db_table = 'content"."film_work'
         verbose_name = 'Кинопроизведение'
         verbose_name_plural = 'Кинопроизведения'
 
@@ -61,7 +62,7 @@ class GenreFilmwork(UUIDMixin):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'content"{0}"genre_film_work'.format('.')
+        db_table = 'content"."genre_film_work'
         unique_together = (('film_work', 'genre'),)
         verbose_name = 'Жанр фильма'
         verbose_name_plural = 'Жанры фильма'
@@ -75,6 +76,6 @@ class PersonFilmwork(UUIDMixin):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'content"{0}"person_film_work'.format('.')
+        db_table = 'content"."person_film_work'
         unique_together = (('film_work', 'person'),)
         indexes = (models.Index(fields=('film_work', 'person'), name='film_work_person_idx'),)
