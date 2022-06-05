@@ -38,8 +38,8 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     title = models.CharField(_('title'), max_length=255)
     description = models.TextField(_('description'), blank=True, null=True)
     creation_date = models.DateTimeField(_('creation_date'), blank=True, null=True)
-    rating = models.FloatField(_('rating'), default=0, blank=True, validators=[MinValueValidator(0),
-                                                                               MaxValueValidator(100)])
+    rating = models.FloatField(_('rating'), default=0, blank=True, validators=[MinValueValidator(0.0),
+                                                                               MaxValueValidator(10.0)])
     type = models.CharField(_('type'), max_length=10, choices=FilworkTypes.choices,
                             default=FilworkTypes.MOVIE)
     genres = models.ManyToManyField(Genre, through='GenreFilmwork')
