@@ -1,13 +1,11 @@
 import os
 import sqlite3
 
-import psycopg2
 from dotenv import load_dotenv
 from loaders import PostgresSaver, SQLiteLoader
 from psycopg2.extensions import connection as _connection
-from psycopg2.extras import DictCursor
 from settings import TABLE_FILMWORK, TABLE_GENRE, TABLE_GENRE_FILMWORK, TABLE_PERSON, TABLE_PERSON_FILMWORK
-from utils import get_model_by_table
+from utils import get_model_by_table, pg_conn_context, sqlite_conn_context
 
 load_dotenv()
 
@@ -27,11 +25,10 @@ def load_from_sqlite(connection: sqlite3.Connection, pg_conn: _connection):
 
 
 if __name__ == '__main__':
-    dsl = {'dbname': os.getenv('DB_NAME'),
+    dsn = {'dbname': os.getenv('DB_NAME'),
            'user': os.getenv('DB_USER'),
            'password': os.getenv('DB_PASSWORD'),
            'host': os.getenv('DB_HOST', '127.0.0.1'),
            'port': os.getenv('DB_PORT', 5432)}
-    with sqlite3.connect('db.sqlite') as sqlite_conn, psycopg2.connect(**dsl,
-                                                                       cursor_factory=DictCursor) as pg_conn:
+    with sqlite_conn_context('db.sqlite') as sqlite_conn, pg_conn_context(dsn) as pg_conn:
         load_from_sqlite(sqlite_conn, pg_conn)

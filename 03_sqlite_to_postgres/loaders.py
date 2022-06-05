@@ -13,12 +13,6 @@ class SQLiteLoader:
     connection: sqlite3.Connection
     batch_size: int = field(default=1000)
 
-    def __post_init__(self):
-        self.connection.row_factory = sqlite3.Row
-
-    def __get_cursor(self):
-        return self.connection.cursor()
-
     def fetchmany(self, table: str):
         cur = self.__get_cursor()
         cur.execute('SELECT * FROM {table}'.format(table=table))
@@ -27,6 +21,9 @@ class SQLiteLoader:
             if not batch:
                 break
             yield batch
+
+    def __get_cursor(self):
+        return self.connection.cursor()
 
 
 @dataclass

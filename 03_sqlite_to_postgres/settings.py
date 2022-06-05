@@ -8,8 +8,6 @@ TABLE_PERSON_FILMWORK = 'person_film_work'
 
 PG_SCHEME = 'content'
 
-SQL_DB = 'db.sqlite'
-
 TABLES_MAPPING = {
     TABLE_GENRE: Genre,
     TABLE_PERSON: Person,
