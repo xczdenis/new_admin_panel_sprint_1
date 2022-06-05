@@ -83,6 +83,4 @@ class PersonFilmwork(UUIDMixin):
 
     class Meta:
         db_table = 'content"."person_film_work'
-        constraints = [
-            models.UniqueConstraint(fields=['film_work', 'person'], name='film_work_person_unique'),
-        ]
+        unique_together = (('film_work', 'person'),)
