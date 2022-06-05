@@ -8,7 +8,7 @@ values are overridden.
 # https://docs.djangoproject.com/en/3.2/howto/deployment/
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = []
 
 # Security
 # https://docs.djangoproject.com/en/3.2/topics/security/
