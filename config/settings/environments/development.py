@@ -12,7 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
-                 '172.17.96.12']
+                 '172.29.18.144']
 
 # Installed apps for development only:
 INSTALLED_APPS += [
@@ -27,7 +27,7 @@ MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 INTERNAL_IPS = [
                    '{0}.1'.format(ip[:ip.rfind('.')])
                    for ip in socket.gethostbyname_ex(socket.gethostname())[2]
-               ] + ['127.0.0.1', '10.0.2.2', '172.17.96.1']
+               ] + ['127.0.0.1', '10.0.2.2', '172.29.16.1']
 
 
 def _custom_show_toolbar(request):
