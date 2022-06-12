@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Prefetch
 from django.utils.translation import gettext_lazy as _
 
 from movies.mixins import TimeStampedMixin, UUIDMixin
@@ -55,6 +56,40 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     def __str__(self):
         return self.title
 
+    @staticmethod
+    def prefetch_roles(queryset):
+        queryset = Filmwork.prefetch_actors(queryset)
+        queryset = Filmwork.prefetch_directors(queryset)
+        queryset = Filmwork.prefetch_writers(queryset)
+        return queryset
+
+    @staticmethod
+    def prefetch_actors(queryset, **kwargs):
+        persons = kwargs.get('persons', Person.objects.all())
+        to_attr = kwargs.get('to_attr', 'actors')
+        prefetch = Prefetch('persons',
+                            persons.filter(personfilmworks__role=PersonFilmwork.Roles.ACTOR).distinct(),
+                            to_attr=to_attr)
+        return queryset.prefetch_related(prefetch)
+
+    @staticmethod
+    def prefetch_directors(queryset, **kwargs):
+        persons = kwargs.get('persons', Person.objects.all())
+        to_attr = kwargs.get('to_attr', 'directors')
+        prefetch = Prefetch('persons',
+                            persons.filter(personfilmworks__role=PersonFilmwork.Roles.DIRECTOR).distinct(),
+                            to_attr=to_attr)
+        return queryset.prefetch_related(prefetch)
+
+    @staticmethod
+    def prefetch_writers(queryset, **kwargs):
+        persons = kwargs.get('persons', Person.objects.all())
+        to_attr = kwargs.get('to_attr', 'writers')
+        prefetch = Prefetch('persons',
+                            persons.filter(personfilmworks__role=PersonFilmwork.Roles.WRITER).distinct(),
+                            to_attr=to_attr)
+        return queryset.prefetch_related(prefetch)
+
 
 class GenreFilmwork(UUIDMixin):
     film_work = models.ForeignKey(Filmwork, on_delete=models.CASCADE)
@@ -75,8 +110,8 @@ class PersonFilmwork(UUIDMixin):
         WRITER = 'writer', 'writer'
         ACTOR = 'actor', 'actor'
 
-    film_work = models.ForeignKey(Filmwork, on_delete=models.CASCADE)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    film_work = models.ForeignKey(Filmwork, on_delete=models.CASCADE, related_name='personfilmworks')
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='personfilmworks')
     role = models.CharField('role', max_length=10, choices=Roles.choices, default=Roles.ACTOR, blank=True,
                             null=True)
     created_at = models.DateTimeField(auto_now_add=True)

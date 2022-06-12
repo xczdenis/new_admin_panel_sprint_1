@@ -1,0 +1,37 @@
+version: '2'
+services:
+    nginx:
+        restart: on-failure
+        image: nginx:1.21.6-alpine
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./nginx/site.conf:/etc/nginx/conf.d/site.conf:ro
+            - $HOME/var/cache/movies/static:/static
+        ports:
+            - "80:80"
+        depends_on:
+            - app
+    app:
+        build:
+            dockerfile: docker/Dockerfile-app
+            context: .
+        restart: always
+        env_file:
+            - ./config/.env
+        environment:
+            - DB_HOST=db
+            - DB_USER=postgres
+            - DJANGO_MANAGEPY_MIGRATE=on
+        command: gunicorn -b 0.0.0.0:8000 config.wsgi:application
+        volumes:
+            - $HOME/var/cache/movies/static:/static
+        depends_on:
+            - db
+    db:
+        build:
+            dockerfile: docker/Dockerfile-db
+            context: .
+        env_file:
+            - ./config/.env
+        volumes:
+            - $HOME/postgresql/movies:/var/lib/postgresql/data

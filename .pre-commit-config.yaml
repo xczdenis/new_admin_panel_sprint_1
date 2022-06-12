@@ -6,6 +6,7 @@ repos:
         description: flake8 enforcement
         entry: flake8
         args: ["--config=setup.cfg"]
+        exclude: /(migrations)/
         language: python
         types: [python]
       - id: isort

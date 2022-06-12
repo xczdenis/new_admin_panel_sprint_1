@@ -20,6 +20,9 @@ INSTALLED_APPS = [
 
     # project apps
     'movies.apps.MoviesConfig',
+
+    # third parties apps
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

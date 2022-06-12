@@ -5,14 +5,13 @@ SECURITY WARNING: don't run with debug turned on in production!
 
 import socket
 
+from config.settings.components import config
 from config.settings.components.common import INSTALLED_APPS, MIDDLEWARE
 
 # Setting the development status:
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1',
-                 'localhost',
-                 '172.29.18.144']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS_DEV', '').split(' ')
 
 # Installed apps for development only:
 INSTALLED_APPS += [
@@ -27,7 +26,7 @@ MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 INTERNAL_IPS = [
                    '{0}.1'.format(ip[:ip.rfind('.')])
                    for ip in socket.gethostbyname_ex(socket.gethostname())[2]
-               ] + ['127.0.0.1', '10.0.2.2', '172.29.16.1']
+               ] + ['127.0.0.1', '10.0.2.2', '192.168.0.10']
 
 
 def _custom_show_toolbar(request):
