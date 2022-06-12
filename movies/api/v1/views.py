@@ -14,6 +14,4 @@ class FilmworkViewSet(ModelViewSet):
     pagination_class = SimplePageNumberPaginator
 
     def get_queryset(self):
-        qs = super().get_queryset().order_by('id').prefetch_related('genres')
-        qs = Filmwork.prefetch_roles(qs)
-        return qs
+        return super().get_queryset().order_by('id').prefetch_genre().prefetch_roles()

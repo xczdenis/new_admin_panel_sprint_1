@@ -36,6 +36,26 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
         MOVIE = 'movie', 'movie'
         TV_SHOW = 'tv_show', 'tv_show'
 
+    class AdvancedManager(models.QuerySet):
+        def prefetch_genre(self):
+            return self.prefetch_related('genres')
+
+        def prefetch_roles(self):
+            qs = self.all()
+            persons = Person.objects.all()
+            maps = {
+                'actors': PersonFilmwork.Roles.ACTOR,
+                'directors': PersonFilmwork.Roles.DIRECTOR,
+                'writers': PersonFilmwork.Roles.WRITER,
+            }
+            for to_attr, role in maps.items():
+                qs = qs.prefetch_related(Prefetch('persons',
+                                                  persons.filter(personfilmworks__role=role).distinct(),
+                                                  to_attr=to_attr)
+                                         )
+            return qs
+
+    objects = AdvancedManager.as_manager()
     title = models.CharField(_('title'), max_length=255)
     description = models.TextField(_('description'), blank=True, null=True)
     creation_date = models.DateTimeField(_('creation_date'), blank=True, null=True)
