@@ -6,7 +6,7 @@ services:
         volumes:
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
             - ./nginx/site.conf:/etc/nginx/conf.d/site.conf:ro
-            - $HOME/var/cache/movies/static:/static
+            - web-static:/static
         ports:
             - "80:80"
         depends_on:
@@ -23,7 +23,7 @@ services:
             - DJANGO_MANAGEPY_MIGRATE=on
         command: gunicorn -b 0.0.0.0:8000 config.wsgi:application
         volumes:
-            - $HOME/var/cache/movies/static:/static
+            - web-static:/static
         depends_on:
             - db
     db:
@@ -33,4 +33,7 @@ services:
         env_file:
             - ./config/.env
         volumes:
-            - $HOME/postgresql/movies:/var/lib/postgresql/data
+            - pgdata:/var/lib/postgresql/data
+volumes:
+    web-static:
+    pgdata:
