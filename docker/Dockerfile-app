@@ -1,19 +1,17 @@
 FROM python:3.10-alpine
 
-ARG HOME_DIR=/app
-ENV DJANGO_ENV=production
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 DJANGO_ENV=production
 
+ARG HOME_DIR=/app
 WORKDIR $HOME_DIR
-EXPOSE 8000
+
+COPY ./docker/scripts/app-entrypoint.sh app-entrypoint.sh
+ENTRYPOINT ["./app-entrypoint.sh"]
 
 COPY . .
-COPY ./docker/scripts/app-entrypoint.sh app-entrypoint.sh
 
 RUN apk update \
     && apk add build-base postgresql-dev \
     && pip3 install --no-cache-dir --upgrade pip \
     && pip install -r requirements.txt \
     && chmod a+x ./app-entrypoint.sh
-
-ENTRYPOINT ["./app-entrypoint.sh"]
-
