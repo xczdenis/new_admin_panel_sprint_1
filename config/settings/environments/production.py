@@ -6,9 +6,13 @@ values are overridden.
 
 # Production flags:
 # https://docs.djangoproject.com/en/3.2/howto/deployment/
+from config.settings.components import config
+
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS_PROD', '').split(' ')
+
+STATIC_ROOT = '/static/'
 
 # Security
 # https://docs.djangoproject.com/en/3.2/topics/security/
@@ -18,11 +22,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SECURE_REDIRECT_EXEMPT = [
-    # This is required for healthcheck to work:
-    '^health/',
-]
+SECURE_SSL_REDIRECT = False
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True

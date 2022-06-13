@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Prefetch
 from django.utils.translation import gettext_lazy as _
 
 from movies.mixins import TimeStampedMixin, UUIDMixin
@@ -35,6 +36,26 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
         MOVIE = 'movie', 'movie'
         TV_SHOW = 'tv_show', 'tv_show'
 
+    class AdvancedManager(models.QuerySet):
+        def prefetch_genre(self):
+            return self.prefetch_related('genres')
+
+        def prefetch_roles(self):
+            qs = self.all()
+            persons = Person.objects.all()
+            maps = {
+                'actors': PersonFilmwork.Roles.ACTOR,
+                'directors': PersonFilmwork.Roles.DIRECTOR,
+                'writers': PersonFilmwork.Roles.WRITER,
+            }
+            for to_attr, role in maps.items():
+                qs = qs.prefetch_related(Prefetch('persons',
+                                                  persons.filter(personfilmworks__role=role).distinct(),
+                                                  to_attr=to_attr)
+                                         )
+            return qs
+
+    objects = AdvancedManager.as_manager()
     title = models.CharField(_('title'), max_length=255)
     description = models.TextField(_('description'), blank=True, null=True)
     creation_date = models.DateTimeField(_('creation_date'), blank=True, null=True)
@@ -75,8 +96,8 @@ class PersonFilmwork(UUIDMixin):
         WRITER = 'writer', 'writer'
         ACTOR = 'actor', 'actor'
 
-    film_work = models.ForeignKey(Filmwork, on_delete=models.CASCADE)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    film_work = models.ForeignKey(Filmwork, on_delete=models.CASCADE, related_name='personfilmworks')
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='personfilmworks')
     role = models.CharField('role', max_length=10, choices=Roles.choices, default=Roles.ACTOR, blank=True,
                             null=True)
     created_at = models.DateTimeField(auto_now_add=True)
